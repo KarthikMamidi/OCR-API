@@ -1,4 +1,4 @@
-var app = angular.module('ocr', []);
+var app = angular.module('OCR', ['ngFileUpload']);
 app.config(function($interpolateProvider) {
     $interpolateProvider.startSymbol('[{[');
     $interpolateProvider.endSymbol(']}]');

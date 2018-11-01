@@ -4,7 +4,7 @@ import time
 from sqlalchemy import create_engine,or_,desc,asc,and_,func
 from sqlalchemy.orm import sessionmaker, aliased
 from sqlalchemy.orm.exc import NoResultFound
-from models import Base,User,Logdetails
+from models import Base,User,Logdetails,Documents
 from flask import Flask, url_for, render_template, flash, abort,current_app,redirect,jsonify
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 import json
@@ -16,7 +16,7 @@ import string
 import datetime
 from sqlalchemy import Date, cast
 
-engine = create_engine('mysql://root:@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
+engine = create_engine('mysql://root:karthikkumar@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 
@@ -43,3 +43,12 @@ def log_activity(currentuser,activity):
     log=Logdetails(logid=uuid.uuid4(),userid=current_user.userid,activity=activity,logtime=datetime.datetime.now())
     session.add(log)
     session.commit()
+
+def addcard(filename,data,current_user):
+    print data
+    session=DBSession()
+    doc=Documents(docid=uuid.uuid4(),documentname=filename,documentholder=current_user.userid)
+    session.add(doc)
+    session.commit()
+    session.close()
+    return "hello"

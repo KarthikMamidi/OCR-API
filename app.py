@@ -11,9 +11,11 @@ import uuid
 from flask import make_response
 from functools import wraps, update_wrapper
 import datetime
+from PIL import Image
 from urlparse import urlparse
 from flask_cache import Cache
 import requests
+import gettext
 
 app = Flask(__name__,static_url_path='')
 application = app
@@ -45,9 +47,14 @@ def unauthorized_handler():
 
 @app.route('/')
 def onboardingpage():
-    return render_template('login.html',error='')
+    try:
+        current_user.email
+        return redirect(url_for('dashboard'))        
+    except AttributeError:
+        print 'jumped'
+        return render_template('login.html',error='')
 
-@app.route('/dashboard')
+@app.route('/api/dashboard')
 def dashboard():
     return render_template('dashboard.html',error='')
 
@@ -66,15 +73,25 @@ def register_user():
 #@cross_origin()
 def loginauthorisation():
     print request.form
-    #remember = request.form.getlist('remember')
+    remember = request.form.getlist('remember')
     user = registration.authenticateuser(request.form)
     print user
     if user == None:
         return render_template('login.html', error='Invalid credentials. Please enter correct details.')
     elif isinstance(user, unicode) != True:
-        login_user(user)
+        if remember:
+            login_user(user, remember=True)
+        else:
+            login_user(user)
         cdacrud.log_activity(user,'logged in')
         return redirect(url_for('api_interface'))
+
+@app.route("/logout")
+@login_required
+def logoutpage():
+    cdacrud.log_activity(current_user,'loggedout')
+    logout_user()
+    return redirect("/",302)
 
 @app.route("/api/userData")
 @login_required
@@ -93,6 +110,64 @@ def api_interface():
     return render_template('api_interface.html',editorname=current_user.userid)
     # return current_user.email
 
+def finalsize(width,height):
+   finalwidth=900
+   tochangewidth=width-finalwidth
+   print tochangewidth
+   ratio=float(finalwidth)/width
+   print ratio
+   finalheight=height*ratio
+   return finalheight
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+@app.route('/api/upload',methods=['POST'])
+# @cross_origin()
+# @login_required
+def newprofileimage():
+    print request.files
+    uploadedfiles=[]
+    for i in request.files:
+        uploadedfiles.append(request.files[i])
+    if request.files:
+        for files in uploadedfiles:
+            print files.filename
+            if files and allowed_file(files.filename):
+                filename = str(uuid.uuid4())
+                files.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))  
+                im = Image.open(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+                width, height = im.size
+                if width>800:
+                    resizedheight=finalsize(width,height)
+                    width=800
+                    size=width,resizedheight
+                    im.thumbnail(size)
+                    try:
+                        im.save(os.path.join(app.config['UPLOAD_FOLDER'],filename),"JPEG")
+                    except IOError:
+                        im.convert("RGB")
+                        im.save(os.path.join(app.config['UPLOAD_FOLDER'],filename),"PNG")    
+                data=dict(request.form)
+                cdacrud.addcard(filename,data,current_user)
+        return filename
+    return 'invalid request'
+
+@app.route('/api/ocrdata', methods=['POST'])
+def ocrdata():
+    print current_user.api_key
+    data = json.loads(request.data)
+    text = gettext.get_string(os.path.join(app.config['UPLOAD_FOLDER'],data["filename"]))
+    print text
+    return text
+    
+
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(APP_ROOT, 'fileuploadfolder/')
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config['ALLOWED_EXTENSIONS'] = set(['jpg','jpeg','png','PNG','pdf','PDF','gif','GIF','JPG'])
+app.config['static_url_path'] ='/static'
 app.config['SECRET_KEY'] = 'srkYSIQSMT21Rjs8'
 
 if __name__ == "__main__":

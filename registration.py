@@ -14,7 +14,7 @@ from flask_mail import Mail, Message
 import requests
 import json
 
-engine = create_engine('mysql://root:@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
+engine = create_engine('mysql://root:karthikkumar@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 
