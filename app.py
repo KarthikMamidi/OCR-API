@@ -47,6 +47,9 @@ def unauthorized_handler():
 def onboardingpage():
     return render_template('login.html',error='')
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html',error='')
 
 @app.route('/signup')
 # #@cross_origin()
@@ -73,14 +76,24 @@ def loginauthorisation():
         cdacrud.log_activity(user,'logged in')
         return redirect(url_for('api_interface'))
 
+@app.route("/api/userData")
+@login_required
+def userData():
+    return cdacrud.getUserData(current_user)
+
+@app.route("/api/updateKey")
+@login_required
+def updateKey():
+    return cdacrud.updateKey(current_user)
+
 @app.route('/apiinterface')
 #@cross_origin()
 @login_required
 def api_interface():
-    #return render_template('api_interface.html',editorname=current_user.userid)
-    return current_user.email
+    return render_template('api_interface.html',editorname=current_user.userid)
+    # return current_user.email
 
 app.config['SECRET_KEY'] = 'srkYSIQSMT21Rjs8'
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=8000,threaded=True)
+    app.run(host='0.0.0.0',port=8000,debug=True)

@@ -14,7 +14,7 @@ from flask_mail import Mail, Message
 import requests
 import json
 
-engine = create_engine('mysql://root:karthikkumar@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
+engine = create_engine('mysql://root:@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 
@@ -54,7 +54,7 @@ def authenticateuser(loginformdata):  # loginverification
 
 def registeruser(signupformdata):
     session = DBSession()
-    user = User(email=signupformdata['email'], userid=uuid.uuid4(), password=generate_password_hash(signupformdata['password']), date_added=datetime.datetime.utcnow())
+    user = User(email=signupformdata['email'], userid=uuid.uuid4(), password=generate_password_hash(signupformdata['password']), date_added=datetime.datetime.utcnow(), api_key=uuid.uuid4(), no_of_requests=0)
     session.add(user)
     session.commit()
     return render_template("registered.html", error='')
