@@ -15,8 +15,9 @@ import uuid
 import string
 import datetime
 from sqlalchemy import Date, cast
+import config
 
-engine = create_engine('mysql://root:karthikkumar@localhost:3306/ocr',pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
+engine = create_engine('mysql://'+config.databasedetails['username']+':'+config.databasedetails['password']+'@'+config.databasedetails['hostname']+':'+config.databasedetails['port']+'/'+config.databasedetails['databasename'],pool_size=10,pool_pre_ping=True,pool_recycle=3600 , echo=False,connect_args={"charset":"utf8mb4"})
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 
@@ -52,3 +53,9 @@ def addcard(filename,data,current_user):
     session.commit()
     session.close()
     return "hello"
+
+def updaterequests(current_user):
+    session = DBSession()
+    user=session.query(User).filter_by(userid=current_user.userid).one()
+    user.no_of_requests += 1
+    session.commit()

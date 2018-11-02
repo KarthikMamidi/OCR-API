@@ -1,0 +1,1 @@
+databasedetails={'databasename':'ocr','hostname':'localhost','port':'3306','username':'root','password':'karthikkumar','encoding':'utf-8'}

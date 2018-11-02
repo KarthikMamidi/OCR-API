@@ -49,7 +49,7 @@ def unauthorized_handler():
 def onboardingpage():
     try:
         current_user.email
-        return redirect(url_for('dashboard'))        
+        return redirect(url_for('api_interface'))        
     except AttributeError:
         print 'jumped'
         return render_template('login.html',error='')
@@ -158,6 +158,7 @@ def newprofileimage():
 def ocrdata():
     print current_user.api_key
     data = json.loads(request.data)
+    cdacrud.updaterequests(current_user)
     text = gettext.get_string(os.path.join(app.config['UPLOAD_FOLDER'],data["filename"]))
     print text
     return text

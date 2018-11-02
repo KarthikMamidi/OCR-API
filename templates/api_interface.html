@@ -31,7 +31,7 @@
             });
         </script>
     </head> 
-    <body ng-app="OCR", ng-controller="upload">
+    <body ng-app="OCR", ng-controller="upload" style="font-family: 'PT Sans', sans-serif;">
         <nav class="navbar navbar-expand-md bg-dark navbar-dark">
             <a class="navbar-brand" href="/api/dashboard">Dashboard</a>
             <a class="navbar-brand" style="color: white" data-toggle="modal" data-target="#logoutModal">Logout</a>
@@ -54,11 +54,14 @@
                 </div>
             </div>
         <div class="container">
-            <div class="container-fluid" style="margin-left: 10%; margin-top: 10%">
+            <div class="container-fluid" style="margin-top: 2%; margin-left: 3%">
+                <h2>Upload an Image to get the text on that Image.</h2>
+            </div>
+            <div class="container-fluid" style="margin-left: 3%; margin-top: 5%;">
                 <span class="display:inline-block;"> 
                     <img src="#" id="thumb" style="width: 20%; height: 20%">
                 </span>
-                <form style="margin-top:5%">
+                <form style="margin-top:2%">
                     <label class="btn btn-primary">
                         <input type="file" id="image" onchange="readURL(this);" style="display: none!important" ngf-select ng-model="files" ngf-capture="'camera'"  ngf-multiple="true" ngf-keep="true" style="border:1px solid #000000;">                    
                         Upload Files
@@ -66,11 +69,11 @@
                     <button class="btn btn-default" type="submit" ng-click="uploadfile(files,'image')">Submit</button>
                 </form>
             </div>                
-            <p style="color:green" ng-show="cardfinished" ng-cloak>Upload Succesful!</p>
-            <button class="btn btn-default" ng-click="getText()">Get Data</button>
-            <div class="row" style="margin-top: 5%">
+            <p style="color:green; margin-left: 4%" ng-show="cardfinished" ng-cloak>Upload Succesful!</p>
+            <button class="btn btn-default" style="margin-left: 4%; margin-top: 1%" ng-click="getText()">Get Data</button>
+            <div class="row" style="margin-top: 2%; margin-bottom: 3%; border: 2px solid black; height: auto">
                 <div class="col-sm-12">
-                    <p>[{[text]}]</p>
+                    <div ng-repeat="text in data track by $index">[{[text]}]</div>
                 </div>
             </div>
         </div>

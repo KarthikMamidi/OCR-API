@@ -29,8 +29,9 @@
         //console.log($scope.filename)
         $http.post('/api/ocrdata', {"filename": $scope.filename})
         .then(function(response){
-            $scope.text = response.data;
-            console.log(text);
+            var text = response.data;
+            $scope.data = text.split('\n');
+            console.log(data);
         })
     }
   });
