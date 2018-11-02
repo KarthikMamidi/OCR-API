@@ -11,13 +11,19 @@ steps to install:
 6. pip install -r requirements.txt 
 
 open mysql and create a database
+
 7. use this command-> mysql -u root -p enter pwd:-> ****
 
 once you are logged in
+
 8. create database ocr;
+
 9. exit();
+
 once out of mysql
 
 10. ->python models.py #this creates database schema
+
 11. ->python app.py #will begin the server
+
 open the browser go to localhost:8000
