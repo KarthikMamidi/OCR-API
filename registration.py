@@ -10,7 +10,6 @@ from models import Base,User,Logdetails
 import uuid
 from flask import Flask, url_for, render_template, flash, abort,current_app,redirect
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from flask_mail import Mail, Message
 import requests
 import json
 import config
